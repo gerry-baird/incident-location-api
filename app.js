@@ -4,6 +4,16 @@ const morgan = require('morgan');
 const winston = require('winston');
 const NodeGeocoder = require('node-geocoder');
 
+//Ignore self signed cert problems
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+//Configuration parameters
+const port = process.env.PORT || 3000;
+const mapKey = process.env.MAPKEY || 'YOUR-KEY-HERE';
+const elastic_url = process.env.ELASTIC_URL || 'http://localhost:9200/incidents/reports';
+const elastic_user = process.env.ELASTIC_USER || '';
+const elastic_password = process.env.ELASTIC_PASSWORD || '';
+
 const app = express();
 app.use(express.json());
 
@@ -14,14 +24,11 @@ winston.level = 'debug';
 const console = new winston.transports.Console();
 winston.add(console);
 
-const port = process.env.PORT || 3000;
-
 app.get('/', (req, res) => {
     res.send('Hello Again');
 });
 
-
-app.post('/incident', async function(req, res) {
+app.post('/incident', async function (req, res) {
     let incident = {
         processID: req.body.processID,
         category: req.body.category,
@@ -43,58 +50,43 @@ app.post('/incident', async function(req, res) {
 
         const options = {
             provider: 'google',
-            apiKey: 'YOUR-KEY-GOES-HERE'
+            apiKey: mapKey
         };
-    
         const geoCoder = NodeGeocoder(options);
         const addrStr = incident.street_adr + ' ' + incident.town_city + ' ' + incident.county + ' UK';
-        const geoResult = await geoCoder.geocode(addrStr);
-        incident.location.lat = geoResult[0].latitude;
-        incident.location.lon = geoResult[0].longitude;
-        winston.info('Updating Incident');
+
+        try{
+            const geoResult = await geoCoder.geocode(addrStr);
+            incident.location.lat = geoResult[0].latitude;
+            incident.location.lon = geoResult[0].longitude;
+            winston.info('Updating Incident');
+        }catch(err){
+            winston.error('Error Updating Incident');
+        } 
     }
 
-    //Send into elasticsearch
-    axios.post('http://localhost:9200/incidents/reports', incident)
-        .then((res) => {
-            //winston.info(`statusCode: ${res.statusCode}`)
-            winston.info(res.status)
-        })
-        .catch((error) => {
-            winston.error(error)
-        })
+    //elastic auth
+    const elastic_credentials = {
+        username: elastic_user,
+        password: elastic_password
+    };
 
-    winston.info('Sending response to client');
+    //Send into elasticsearch
+    axios.post(elastic_url, incident, {
+        auth: elastic_credentials
+    }).then((res) => {
+        //winston.info(`statusCode: ${res.statusCode}`)
+        winston.info(res.status)
+    }).catch((error) => {
+            winston.error(error)
+    })
+
+    winston.info('Sending response back to client');
     //Send incident back to client
     res.send(incident);
 
 });
 
-function getLocation(incident){
-
-    const options = {
-        provider: 'google',
-        apiKey: 'AIzaSyC2N1t51eR4ZMd3zJ-MYLlQUOilaj-SmTw'
-    };
-
-    const geoCoder = NodeGeocoder(options);
-    const addrStr = incident.street_adr + ' ' + incident.town_city + ' ' + incident.county + ' UK';
-
-    try{
-        //const geoResult = await geoCoder.geocode(addrStr);
-        //incident.location.lat = geoResult[0].latitude;
-        //incident.location.lon = geoResult[0].longitude;
-        winston.info('Updating Incident');
-        
-    }
-    catch(err){
-        winston.error(err);
-    }
-
-    return incident;
-}
-
 app.listen(port, () => {
-    console.log('Ugh');
     winston.info('Incident Location API running on port ' + port);
 });
