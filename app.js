@@ -8,7 +8,7 @@ const NodeGeocoder = require('node-geocoder');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 //Configuration parameters
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 const mapKey = process.env.MAPKEY || 'YOUR-KEY-HERE';
 const elastic_url = process.env.ELASTIC_URL || 'http://localhost:9200/incidents/reports';
 const elastic_user = process.env.ELASTIC_USER || '';
