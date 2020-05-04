@@ -32,6 +32,7 @@ app.post('/incident', async function (req, res) {
     let incident = {
         processID: req.body.processID,
         category: req.body.category,
+        subCategory: req.body.subCategory,
         priority: req.body.priority,
         status: req.body.status,
         description: req.body.description,
