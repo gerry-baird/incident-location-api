@@ -1,0 +1,128 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "version" : "0.1",
+    "title" : "Incident Reporting",
+    "contact" : { }
+  },
+  "host" : "localhost:9200",
+  "basePath" : "/incident",
+  "schemes" : [ "http" ],
+  "consumes" : [ "application/json" ],
+  "produces" : [ "application/json" ],
+  "paths" : {
+    "/" : {
+      "post" : {
+        "summary" : "Add incident",
+        "tags" : [ "Misc" ],
+        "operationId" : "Addincident",
+        "deprecated" : false,
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "Body",
+          "in" : "body",
+          "required" : true,
+          "description" : "",
+          "schema" : {
+            "$ref" : "#/definitions/IncidentDetails"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "",
+            "schema" : {
+              "$ref" : "#/definitions/IncidentDetails"
+            },
+            "headers" : { }
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "IncidentDetails" : {
+      "title" : "IncidentDetails",
+      "example" : {
+        "processID" : "102",
+        "category" : "Leak",
+        "subCategory" : "Leak",
+        "priority" : "High",
+        "status" : "Pending Investigation",
+        "description" : "Jet of water coming out of road",
+        "created" : "2020-04-28T11:10:30Z",
+        "assigned_to" : "John Spanner",
+        "reported_by" : "Suzy Smith",
+        "location" : {
+          "lat" : 52.13,
+          "lon" : -2.32
+        }
+      },
+      "type" : "object",
+      "properties" : {
+        "processID" : {
+          "type" : "string"
+        },
+        "category" : {
+          "type" : "string"
+        },
+        "subCategory" : {
+          "type" : "string"
+        },
+        "priority" : {
+          "type" : "string"
+        },
+        "status" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "created" : {
+          "type" : "string"
+        },
+        "assigned_to" : {
+          "type" : "string"
+        },
+        "reported_by" : {
+          "type" : "string"
+        },
+        "street_adr" : {
+          "type" : "string"
+        },
+        "town_city" : {
+          "type" : "string"
+        },
+        "county" : {
+          "type" : "string"
+        },
+        "location" : {
+          "$ref" : "#/definitions/Location"
+        }
+      },
+      "required" : [ "processID", "category", "subCategory", "priority", "status", "description", "created", "assigned_to", "reported_by", "street_adr", "town_city", "county", "location" ]
+    },
+    "Location" : {
+      "title" : "Location",
+      "example" : {
+        "lat" : 52.13,
+        "lon" : -2.32
+      },
+      "type" : "object",
+      "properties" : {
+        "lat" : {
+          "type" : "number",
+          "format" : "double"
+        },
+        "lon" : {
+          "type" : "number",
+          "format" : "double"
+        }
+      },
+      "required" : [ "lat", "lon" ]
+    }
+  },
+  "tags" : [ {
+    "name" : "Misc",
+    "description" : ""
+  } ]
+}
