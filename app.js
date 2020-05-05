@@ -25,7 +25,7 @@ const console = new winston.transports.Console();
 winston.add(console);
 
 app.get('/', (req, res) => {
-    res.send('Hello Again!');
+    res.send('Hello Again Bro!');
 });
 
 app.post('/incident', async function (req, res) {
