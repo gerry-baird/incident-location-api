@@ -12,7 +12,7 @@
   "dependencies": {
     "@googlemaps/google-maps-services-js": "^2.6.0",
     "axios": "^0.19.2",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "morgan": "^1.10.0",
     "node-geocoder": "^3.27.0",
     "winston": "^3.2.1"
